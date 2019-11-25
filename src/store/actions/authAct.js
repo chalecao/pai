@@ -44,7 +44,7 @@ const authActions = {
    * @return {[type]} [description]
    */
   [types.logIn]: async function ({ state, commit, dispatch }, { wphost, username, password }) {
-    let host = (wphost || state.app.wpmain)
+    let host = wphost
     let wp = new WPAPI({
       endpoint: host + "/wp-json",
       // This assumes you are using basic auth, as described further below
@@ -91,6 +91,8 @@ const authActions = {
    * @return {[type]} [description]
    */
   [types.pubComp2market]: async function ({ state, commit, dispatch }, { name, price }) {
+    //todo : market and page only in main
+    if (state.app.wpmain !== state.oauth.wphost) return;
     let parentPageId = types.paiComponentMarket
     let cust = JSON.stringify(state.project.customComponents)
     let userId = state.oauth.userId
@@ -102,6 +104,7 @@ const authActions = {
     }).then(function (response) {
       console.log('pubComp2market', response)
     }).catch(e => {
+      console.log('pubComp2market fail', e)
     })
 
   },

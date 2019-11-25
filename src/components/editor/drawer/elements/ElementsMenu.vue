@@ -7,7 +7,6 @@
       :startClosed="ele.close"
       @oper="showOper()"
       cusKey="oper"
-      cusIcon="发布到组件库"
     >
       <div class="el-menu">
         <div
@@ -38,7 +37,7 @@
         </div>
       </div>
     </menu-toggle>
-    <a-modal title="发布组件" v-model="visible" @ok="handlePublish">
+    <a-modal title="发布组件库" v-model="visible" @ok="handlePublish">
       名称：
       <a-input v-model="compName"></a-input>价格：
       <a-input v-model="compFee" placeholder="0 - 10"></a-input>
@@ -79,6 +78,7 @@ export default {
     ...mapState({
       activePage: state => state.app.selectedPage,
       oauth: state => state.oauth,
+      wpmain: state => state.app.wpmain,
       elementConfig: state => [
         {
           name: "基本组件",
@@ -118,7 +118,11 @@ export default {
       e.dataTransfer.setData("text/plain", JSON.stringify(this.initItem(item)));
     },
     showOper() {
-      this.visible = true;
+      if (this.oauth.wphost == this.wpmain) {
+        this.visible = true;
+      } else {
+        this.$message.error("没有权限，请联系管理员");
+      }
     },
     handlePublish() {
       if (!this.oauth.isAuthorized) {
@@ -135,7 +139,7 @@ export default {
       }
     },
     addItemToStage(e, item) {
-      console.log('addItemToStage', item)
+      console.log("addItemToStage", item);
       let heightInContainer = 0;
       let childrenInContainer = document.querySelector(".mr-container")
         .children;

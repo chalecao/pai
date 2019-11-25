@@ -72,12 +72,13 @@ export default {
 
   methods: {
     checkPasswd() {
-      if (!this.account || !this.passwd) {
-        this.repoError = "请输入账号和密码";
+      if (!this.account || !this.passwd || !this.wphost) {
+        this.repoError = "请输入完整信息";
       } else {
         this.repoError = "";
       }
-      this.valid = this.account && this.passwd && !this.repoError;
+      this.valid =
+        this.wphost && this.account && this.passwd && !this.repoError;
     },
 
     async openDialog() {
