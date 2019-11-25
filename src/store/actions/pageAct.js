@@ -5,21 +5,21 @@ import { compRef } from '@/factories/componentFactory'
 import { getExtGlobComps, setElId } from '@/helpers/recursiveMethods'
 
 const pageActions = {
-/**
- * Creates a new page (if no payload.id) or
- * updates an existing one, and closes the PageDialog.
- *
- * @param {string} payload.name : Page's name
- * @param {string} payload.path : Page's path with a preceding '/'
- * @param {string|null} [payload.id] : Page's id (shortid, randomly generated)
- *
- * @see {@link [types.getPageIndexById]}
- * @see {@link [types.createPage]}
- * @see {@link [types.updatePage]}
- * @see {@link [types._togglePageDialog]}
- */
+  /**
+   * Creates a new page (if no payload.id) or
+   * updates an existing one, and closes the PageDialog.
+   *
+   * @param {string} payload.name : Page's name
+   * @param {string} payload.path : Page's path with a preceding '/'
+   * @param {string|null} [payload.id] : Page's id (shortid, randomly generated)
+   *
+   * @see {@link [types.getPageIndexById]}
+   * @see {@link [types.createPage]}
+   * @see {@link [types.updatePage]}
+   * @see {@link [types._togglePageDialog]}
+   */
   [types.savePageAndClose]: function ({ getters, commit }, payload) {
-    commit(types._togglePageDialog, {isOpen: false, isNew: !payload.id})
+    commit(types._togglePageDialog, { isOpen: false, isNew: !payload.id })
 
     if (!payload.id) {
       let page = newPage(payload.name, payload.path.toLowerCase())
@@ -36,17 +36,17 @@ const pageActions = {
     }
   },
 
-/**
- * Creates a new copy of the page provided on the payload
- * and changes the active page afterwards.
- *
- * @param {string} payload.page : The page that will be duplicated
- *
- * @see {@link [types.createPage]}
- * @see {@link [types._changeActivePage]}
- * @see {@link [types._saveComponentRef]}
- * @see {@link [types._updateComponentRef]}
- */
+  /**
+   * Creates a new copy of the page provided on the payload
+   * and changes the active page afterwards.
+   *
+   * @param {string} payload.page : The page that will be duplicated
+   *
+   * @see {@link [types.createPage]}
+   * @see {@link [types._changeActivePage]}
+   * @see {@link [types._saveComponentRef]}
+   * @see {@link [types._updateComponentRef]}
+   */
   [types.duplicatePage]: function ({ getters, commit }, payload) {
     const copyId = shortid.generate()
     const extGlobCompList = getExtGlobComps(payload.page)
@@ -65,7 +65,7 @@ const pageActions = {
         } else {
           let compIndex = getters.getComponentRefIndexByName(comp.name)
           let newCount = getters.getComponentRefByIndex(compIndex).usageCount + 1
-          commit(types._updateComponentRef, {compIndex, newCount})
+          commit(types._updateComponentRef, { compIndex, newCount })
         }
       }
     }
@@ -74,16 +74,16 @@ const pageActions = {
     commit(types._changeActivePage, pageCopy)
   },
 
-/**
- * Creates a new copy of the page provided on the payload
- * and changes the active page afterwards.
- *
- * @param {string} payload.page : The page that will be duplicated
- *
- * @see {@link [types.deletePage]}
- * @see {@link [types._updateComponentRef]}
- * @see {@link [types._removeComponentRef]}
- */
+  /**
+   * Creates a new copy of the page provided on the payload
+   * and changes the active page afterwards.
+   *
+   * @param {string} payload.page : The page that will be duplicated
+   *
+   * @see {@link [types.deletePage]}
+   * @see {@link [types._updateComponentRef]}
+   * @see {@link [types._removeComponentRef]}
+   */
   [types.removePage]: function ({ state, getters, commit }, payload) {
     const extGlobCompList = getExtGlobComps(state.project.pages[payload.pageIndex])
 
@@ -93,13 +93,34 @@ const pageActions = {
         let count = getters.getComponentRefByIndex(compIndex).usageCount
 
         count > 1
-          ? commit(types._updateComponentRef, {compIndex, newCount: count - 1})
+          ? commit(types._updateComponentRef, { compIndex, newCount: count - 1 })
           : commit(types._removeComponentRef, compIndex)
       }
     }
 
     commit(types.deletePage, payload.pageIndex)
-  }
+  },
+
+  /**
+   * 添加自定义组件
+   * @param {*} param0 
+   * @param {*} payload 
+   */
+  [types.addCustomComponent]: function ({ state, dispatch, commit }, payload) {
+    commit(types._addCustomComponent, payload)
+    dispatch(types.syncProject2wp)
+  },
+
+  /**
+   * 添加自定义组件
+   * @param {*} param0 
+   * @param {*} payload 
+   */
+  [types.deleteCustomComponent]: function ({ state, dispatch, commit }, payload) {
+    commit(types._deleteCustomComponent, payload)
+    // dispatch(types.syncProject2wp) 对于删除暂时不同步
+  },
+
 }
 
 export default pageActions

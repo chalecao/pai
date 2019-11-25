@@ -8,7 +8,7 @@ const materialComponents = [
   // --- DRAWER --- //
   {
     'displayName': 'Drawer',
-    'iconName': 'mdcDrawer',
+    'icon': 'mdcDrawer',
     'name': 'mdcDrawerComp',
     'type': 'mdc-drawer',
     'dependencies': [
@@ -78,7 +78,7 @@ const materialComponents = [
   // --- TOP APP BAR --- //
   {
     'displayName': 'TopAppBar',
-    'iconName': 'mdcToolbar',
+    'icon': 'mdcToolbar',
     'name': 'mdcTopAppBarComp',
     'type': 'mdc-top-app-bar',
     'dependencies': [
@@ -133,7 +133,7 @@ const materialComponents = [
   // --- SELECT --- //
   {
     'displayName': 'Select',
-    'iconName': 'mdcSelect',
+    'icon': 'mdcSelect',
     'name': 'mdcSelectComp',
     'type': 'mdc-select',
     'dependencies': [
@@ -195,7 +195,7 @@ const materialComponents = [
   // --- CHECKBOX --- //
   {
     'displayName': 'Checkbox',
-    'iconName': 'mdcCheckbox',
+    'icon': 'mdcCheckbox',
     'name': 'mdcCheckboxComp',
     'type': 'mdc-checkbox',
     'dependencies': [
@@ -230,7 +230,7 @@ const materialComponents = [
   // --- CARD --- //
   {
     'displayName': 'Card',
-    'iconName': 'mdcCard',
+    'icon': 'mdcCard',
     'name': 'mdcCardComp',
     'type': 'mdc-card',
     'dependencies': [
@@ -301,7 +301,7 @@ const materialComponents = [
   // --- LIST --- //
   {
     'displayName': 'List',
-    'iconName': 'mdcList',
+    'icon': 'mdcList',
     'name': 'mdcListComp',
     'type': 'mdc-list',
     'dependencies': [
@@ -361,7 +361,7 @@ const materialComponents = [
   // --- BUTTON --- //
   {
     'displayName': 'Button',
-    'iconName': 'mdcButton',
+    'icon': 'mdcButton',
     'name': 'mdcButtonComp',
     'type': 'mdc-button',
     'dependencies': [
@@ -398,7 +398,7 @@ const materialComponents = [
   // --- FLOATING ACTION BUTTON --- //
   {
     'displayName': 'FAB',
-    'iconName': 'mdcButton',
+    'icon': 'mdcButton',
     'name': 'mdcFABComp',
     'type': 'mdc-fab',
     'dependencies': [
@@ -429,7 +429,7 @@ const materialComponents = [
   // --- RADIO --- //
   {
     'displayName': 'Radio',
-    'iconName': 'mdcRadio',
+    'icon': 'mdcRadio',
     'name': 'mdcRadioComp',
     'type': 'mdc-radio',
     'dependencies': [
@@ -464,7 +464,7 @@ const materialComponents = [
   // --- LINEAR PROGRESS --- //
   {
     'displayName': 'Progress',
-    'iconName': 'mdcProgress',
+    'icon': 'mdcProgress',
     'name': 'mdcLinearProgressComp',
     'type': 'mdc-linear-progress',
     'dependencies': [
@@ -500,7 +500,7 @@ const materialComponents = [
   // --- SWITCH --- //
   {
     'displayName': 'Switch',
-    'iconName': 'mdcSwitch',
+    'icon': 'mdcSwitch',
     'name': 'mdcSwitchComp',
     'type': 'mdc-switch',
     'dependencies': [
@@ -532,7 +532,7 @@ const materialComponents = [
   // --- TEXTFIELD --- //
   {
     'displayName': 'Textfield',
-    'iconName': 'mdcTextfield',
+    'icon': 'mdcTextfield',
     'name': 'mdcTextfieldComp',
     'type': 'mdc-textfield',
     'dependencies': [

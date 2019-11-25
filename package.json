@@ -33,6 +33,7 @@
     "localforage": "^1.7.1",
     "normalize.css": "^7.0.0",
     "oauth-open": "^1.0.3",
+    "qrcode.vue": "^1.7.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "shortid": "^2.2.8",
@@ -42,7 +43,8 @@
     "vue-mdc-adapter": "^0.15.3",
     "vue-router": "^2.8.1",
     "vuera": "^0.2.5",
-    "vuex": "^2.5.0"
+    "vuex": "^2.5.0",
+    "wpapi": "^1.2.1"
   },
   "devDependencies": {
     "autoprefixer": "^7.2.6",

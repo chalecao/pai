@@ -69,6 +69,7 @@ export default {
     const data = {
       class: elementO.classes,
       style: styles,
+      dependency: elementO.dependency,
       attrs: {
         id: elementO.id,
         "data-id": elementO.id,
@@ -112,10 +113,11 @@ export default {
         height: elementO.height,
         minWidth: elementO.minWidth,
         minHeight: elementO.minHeight,
-        position: elementO.styles.position || 'absolute'
+        position: elementO.styles.position || "absolute",
+        dependency: elementO.dependency
       };
 
-      console.log(MrEl, data);
+      // console.log(MrEl, data);
 
       stageElem = createElement(
         MrEl,

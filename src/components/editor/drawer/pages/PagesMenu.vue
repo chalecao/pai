@@ -7,11 +7,7 @@
         :class="{active: (page.id === activePage.id)}"
         @click="changePageIfNeeded(page)"
       >
-        <li
-          v-tooltip.right="{content: page.name, delay: 0}"
-          @contextmenu.exact.stop.prevent="showOptsMenu(page)"
-          class="pages-list__item"
-        >
+        <li @contextmenu.exact.stop.prevent="showOptsMenu(page)" class="pages-list__item">
           <span class="pages-list-item__start-detail">
             <svgicon
               v-if="pageIndex === 0"
@@ -47,22 +43,54 @@
                 @click.native="showOptsMenu(page)"
               ></svgicon>
               <mdc-menu :ref="'menu-'+page.id" @select="(selected)=>onSelect(selected, pageIndex)">
-                <mdc-menu-item>修改页面名称</mdc-menu-item>
+                <mdc-menu-item>修改页面</mdc-menu-item>
                 <mdc-menu-item>复制页面</mdc-menu-item>
-                <mdc-menu-item>导出HTML_with_css</mdc-menu-item>
-                <mdc-menu-item>导出模块</mdc-menu-item>
-                <mdc-menu-divider></mdc-menu-divider>
                 <mdc-menu-item :disabled="(projectPages.length === 1)">删除页面</mdc-menu-item>
+                <mdc-menu-divider></mdc-menu-divider>
+                <mdc-menu-item>保存到WP(草稿)</mdc-menu-item>
+                <mdc-menu-item>发布到WP(线上))</mdc-menu-item>
+                <mdc-menu-item>查看详情</mdc-menu-item>
               </mdc-menu>
             </mdc-menu-anchor>
           </span>
         </li>
+        <div class="pages-list_tags">
+          <a-badge
+            v-if="page.wpstatus == 'publish'"
+            :count="'已发布-'+page.wpid"
+            :numberStyle="{backgroundColor: '#52c41a'} "
+          />
+          <a-badge v-if="page.wpstatus == 'draft'" :count="'草稿-'+page.wpid" />
+          <a-badge
+            v-if="!page.wpid"
+            count="未发布"
+            :numberStyle="{backgroundColor: '#fff', color: '#999', boxShadow: '0 0 0 1px #d9d9d9 inset'}"
+          />
+        </div>
       </div>
     </ul>
 
     <mdc-fab class="new-page-btn" @click="_togglePageDialog({isOpen: true, isNew: true})">
       <svgicon icon="system/add_page" width="24" height="24"></svgicon>
     </mdc-fab>
+    <a-modal title="页面详情" v-model="visible" :footer="null">
+      页面ID：{{activePage.wpid}}
+      <br />
+      状态：{{!activePage.wpid?"未发布":(activePage.wpstatus == 'draft'?'草稿':'已发布')}}
+      <br />
+      页面地址：(推广用户：{{oauth.userId}})
+      <br />
+      <a :if="activePage.wpid" :href="getLink()" target="_blank">{{getLink()}}</a>
+      <br />分享推广：
+      <br />
+      <qrcode-vue
+        class="margin-l-40"
+        :if="activePage.wpid"
+        :value="getLink()"
+        :size="150"
+        level="H"
+      ></qrcode-vue>
+    </a-modal>
   </div>
 </template>
 
@@ -71,11 +99,14 @@
 import { mapState, mapActions, mapMutations } from "vuex";
 import {
   duplicatePage,
+  publishPage,
   removePage,
   _changeActivePage,
   _togglePageDialog,
-  _clearSelectedElements
+  _clearSelectedElements,
+  noLoginMessage
 } from "@/store/types";
+import QrcodeVue from "qrcode.vue";
 
 import "@/assets/icons/system/home";
 import "@/assets/icons/system/page";
@@ -84,15 +115,33 @@ import "@/assets/icons/system/add_page";
 
 export default {
   name: "pages-menu",
+  data: function() {
+    return {
+      visible: false
+    };
+  },
+  components: {
+    QrcodeVue
+  },
   computed: mapState({
     activePage: state => state.app.selectedPage || { id: 0 },
-    projectPages: state => (state ? state.project.pages : [])
+    projectPages: state => (state ? state.project.pages : []),
+    oauth: state => state.oauth,
+    isLoading: state => state.app.isLoading
   }),
   methods: {
     changePageIfNeeded(page) {
       if (page.id !== this.activePage.id) {
         this._clearSelectedElements();
         this._changeActivePage(page);
+      }
+    },
+
+    getLink() {
+      if (this.activePage.wpstatus == "draft") {
+        return this.activePage.wplink + "&userid=" + this.oauth.userId;
+      } else {
+        return this.activePage.wplink + "?userid=" + this.oauth.userId;
       }
     },
 
@@ -104,9 +153,10 @@ export default {
     onSelect(selected, pageIndex) {
       const EDIT = 0;
       const DUPLICATE = 1;
-      const EXPORT_HTML = 2;
-      const EXPORT_MODULE = 3;
-      const DELETE = 4;
+      const EXPORT_WP = 3;
+      const EXPORT_WP_PUB = 4;
+      const DETAIL = 5;
+      const DELETE = 2;
 
       switch (selected.index) {
         case EDIT:
@@ -116,21 +166,60 @@ export default {
           this._clearSelectedElements();
           this.duplicatePage({ page: this.activePage });
           break;
-        case EXPORT_HTML:
+        case EXPORT_WP:
           //todo: add transform
+          if (!this.oauth.isAuthorized) {
+            this.$message.error(noLoginMessage);
+          } else {
+            this.publishPage({
+              page: this.activePage,
+              status: "draft",
+              succCB: () => {
+                this.visible = true;
+              }
+            });
+            this.$message.info("页面草稿发布中，稍后请在我的页面中查看");
+          }
           break;
-        case EXPORT_MODULE:
+        case EXPORT_WP_PUB:
           //todo: add transform
+          if (!this.oauth.isAuthorized) {
+            this.$message.error(noLoginMessage);
+          } else if (!this.activePage.wpid) {
+            this.$message.error("请先保存到草稿，然后才能发布哦");
+          } else {
+            this.publishPage({
+              page: this.activePage,
+              status: "publish",
+              succCB: () => {
+                this.visible = true;
+              }
+            });
+            this.$message.info("页面正式发布中，稍后请在我的页面中查看");
+          }
           break;
+
         case DELETE:
-          let fallbackPage = this.projectPages[pageIndex > 0 ? 0 : 1] || null;
-          this.changePageIfNeeded(fallbackPage);
-          this.removePage({ pageIndex });
+          this.$confirm({
+            title: `确定删除页面？`,
+            onOk: () => {
+              let fallbackPage =
+                this.projectPages[pageIndex > 0 ? 0 : 1] || null;
+              this.changePageIfNeeded(fallbackPage);
+              this.removePage({ pageIndex });
+            },
+            onCancel() {}
+          });
+
+          break;
+        case DETAIL:
+          //todo: add transform
+          this.visible = true;
           break;
       }
     },
 
-    ...mapActions([duplicatePage, removePage]),
+    ...mapActions([duplicatePage, removePage, publishPage]),
     ...mapMutations([
       _clearSelectedElements,
       _togglePageDialog,
@@ -236,5 +325,11 @@ export default {
   position: fixed;
   right: 92px;
   bottom: 32px;
+}
+.pages-list_tags {
+  padding: 0 16px;
+}
+.margin-l-40 {
+  margin-left: 140px;
 }
 </style>

@@ -5,12 +5,13 @@
 const basicElements = [
   // DIV
   {
+    'displayName': 'div',
     'name': 'div',
     'type': 'div',
     'egglement': true,
     'containegg': true,
-    'width': 300,
-    'height': 300,
+    'width': '100%',
+    'height': 100,
     'attrs': {
       'hidden': false,
       'display': 'flex'
@@ -22,7 +23,12 @@ const basicElements = [
       'border-style': 'solid',
       'border-width': '1px'
     },
-    'children': []
+    'children': [],
+    'dependency': {
+      js: 'xxx',
+      css: 'xxx',
+      script: 'xxx'
+    }
   },
 
   // TABLE
@@ -31,10 +37,8 @@ const basicElements = [
     'type': 'table',
     'egglement': true,
     'wrappegg': true,
-    'width': 550,
-    'minWidth': 250,
+    'width': "100%",
     'height': 300,
-    'minHeight': 85,
     'attrs': {},
     'styles': {
       'background-color': '#ffffff',
@@ -393,12 +397,14 @@ const basicElements = [
     'name': 'image',
     'type': 'img',
     'egglement': true,
-    'width': 50,
-    'height': 44.44,
+    'width': '100%',
+    'height': '100px',
     'attrs': {
-      'src': '/static/vuegg-fam.svg'
+      'src': 'https://haomou.oss-cn-beijing.aliyuncs.com/upload/2019/11/timg.gif'
     },
-    'styles': {},
+    'styles': {
+      'object-fit': 'cover'
+    },
     'classes': {}
   }
 ]

@@ -1,8 +1,9 @@
 import newProject from './projectFactory'
 
-function newState (project) {
+function newState(project) {
   return {
     app: {
+      wpmain: 'https://www.fed123.com',
       isLoading: false,
       isBlockLoading: false,
       hasChanges: false,
@@ -15,10 +16,14 @@ function newState (project) {
       },
       selectedPage: null,
       selectedElements: [],
+      customComponents: [],
       editorZoom: 1
     },
+    wp: null,
     oauth: {
-      isAuthorized: false,
+      wphost: '',
+      userId: null,
+      isAuthorized: null,
       authenticatedUser: null
     },
     project: project || newProject('component name')

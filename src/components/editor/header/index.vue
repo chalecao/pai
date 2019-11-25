@@ -1,23 +1,51 @@
 <template>
   <div class="headegg mdc-theme--background" :class="{'not-scrolled': scroll0}">
-    <a class="home-btn" href target="_blank">π</a>
-
+    <a class="home-btn">π</a>
+    <div class="head-menu-bar">
+      <span class="head-menu-item" @click="showModal('组件市场')">组件市场</span>
+      <span class="head-menu-item">页面模板</span>
+      <span class="head-menu-item">我的页面</span>
+    </div>
     <!-- <input class="title-input" v-model="tmpProjectTitle" @blur="onTitleBlur"
     title="Project title" placeholder="Project title"/>-->
 
     <div class="spacer"></div>
     <action-bar></action-bar>
-    <!-- <user-menu></user-menu> -->
+    <user-menu></user-menu>
+    <a-modal :title="title" v-model="visible" :footer="null">
+      <a-list
+        class="demo-loadmore-list"
+        :loading="loading"
+        itemLayout="horizontal"
+        :dataSource="data"
+      >
+        <div
+          v-if="showLoadingMore"
+          slot="loadMore"
+          :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }"
+        >
+          <a-spin v-if="loadingMore" />
+          <a-button v-else @click="onLoadMore">loading more</a-button>
+        </div>
+        <a-list-item slot="renderItem" slot-scope="item, index">
+          <a slot="actions">使用</a>
+          <a slot="actions">审核通过</a>
+          <a slot="actions">删除</a>
+          <div>{{item.title}}</div>
+        </a-list-item>
+      </a-list>
+    </a-modal>
   </div>
 </template>
 
 
 <script>
 import { mapState, mapMutations } from "vuex";
-import { updateProject } from "@/store/types";
+import { updateProject, paiComponentMarket } from "@/store/types";
 
 import UserMenu from "./UserMenu";
 import ActionBar from "./ActionBar";
+import { handleComa } from "@/mixins/util";
 
 import "@/assets/icons/product/vuegg";
 
@@ -27,14 +55,55 @@ export default {
   props: ["scroll0"],
   data: function() {
     return {
-      tmpProjectTitle: ""
+      visible: false,
+      title: "云π",
+      tmpProjectTitle: "",
+      loading: true,
+      loadingMore: false,
+      showLoadingMore: true,
+      data: []
     };
   },
   computed: mapState({
     project: state => (state ? state.project : {}),
-    projectTitle: state => (state ? state.project.title : "")
+    projectTitle: state => (state ? state.project.title : ""),
+    wp: state => state.wp
   }),
   methods: {
+    showModal(title) {
+      this.title = title;
+      this.visible = true;
+      this.getData(res => {
+        this.loading = false;
+        this.data = res.results;
+      });
+    },
+    getData(callback) {
+      wp.pages()
+        .param("parent", paiComponentMarket)
+        .param("status", "publish")
+        .then(pages => {
+          let results = [];
+          try {
+            pages.forEach(p => {
+              results.push(JSON.parse(handleComa(p)));
+            });
+          } catch (e) {
+            console.log(e);
+          }
+          callback({ results });
+        });
+    },
+    onLoadMore() {
+      this.loadingMore = true;
+      this.getData(res => {
+        this.data = this.data.concat(res.results);
+        this.loadingMore = false;
+        this.$nextTick(() => {
+          window.dispatchEvent(new Event("resize"));
+        });
+      });
+    },
     onTitleBlur() {
       if (this.tmpProjectTitle && this.tmpProjectTitle !== this.projectTitle) {
         this.updateProject({ title: this.tmpProjectTitle });
@@ -106,6 +175,15 @@ export default {
 
 .spacer {
   width: 12px;
+}
+
+.head-menu-bar {
+  flex-grow: 1;
+  font-size: 18px;
+}
+.head-menu-item {
+  cursor: pointer;
+  margin-right: 20px;
 }
 
 .title-input {

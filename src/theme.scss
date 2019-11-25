@@ -16,3 +16,11 @@ $mdc-theme-background: #eee;
     box-sizing: content-box !important;
   }
 }
+
+.mdc-text-field__input{
+  padding-top: 0;
+}
+
+.mdc-menu{
+  z-index: 999;
+}

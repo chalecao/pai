@@ -10,6 +10,7 @@
       :height="height"
       :width="width"
       :styles="styles"
+      :title="title"
       @propchange="onPropChange"
     ></page-settings>
 
@@ -47,7 +48,10 @@
       :width="width"
       :text="text"
       :styles="styles"
+      :classes="classes"
+      :dependency="dependency"
       :attrs="attrs"
+      :displayName="displayName"
       @propchange="onPropChange"
     ></element-settings>
 
@@ -96,6 +100,8 @@ export default {
   },
   data: function() {
     return {
+      title: null,
+      displayName: null,
       text: null,
       height: null,
       lineHeight: null,
@@ -109,6 +115,7 @@ export default {
       attrs: {},
       styles: {},
       classes: {},
+      dependency: {},
       webSafeFonts: WebSafeFonts
     };
   },
@@ -118,7 +125,7 @@ export default {
         ? "Page"
         : this.selectedElements.length > 1
         ? "Multiple Items"
-        : this.selectedElements[0].name;
+        : this.selectedElements[0].displayName || this.selectedElements[0].name;
     },
     selectionIcon() {
       return this.selectedElements.length === 0
@@ -156,7 +163,10 @@ export default {
 
     ...mapState({
       activePage: state => state.app.selectedPage,
-      selectedElements: state => state.app.selectedElements
+      selectedElements: state => {
+        console.log("selectedElements");
+        return state.app.selectedElements;
+      }
     })
   },
   methods: {
@@ -200,10 +210,11 @@ export default {
       console.log(val);
       if (val !== null) {
         if (Array.isArray(val)) {
-          this.text = this.height = this.width = this.top = this.left = this.bottom = this.right = null;
-          this.attrs = this.styles = this.classes = {};
+          this.displayName = this.text = this.height = this.width = this.top = this.left = this.bottom = this.right = null;
+          this.attrs = this.styles = this.classes = this.dependency = {};
           this.zIndex = "auto";
         } else {
+          this.displayName = val.displayName ? val.displayName : "";
           this.text = val.text ? val.text : null;
           this.height =
             val.height && typeof val.height !== "undefined"
@@ -236,7 +247,9 @@ export default {
           this.attrs = val.attrs ? cloneDeep(val.attrs) : {};
           this.styles = val.styles ? cloneDeep(val.styles) : {};
           this.classes = val.classes ? cloneDeep(val.classes) : {};
+          this.dependency = val.dependency ? cloneDeep(val.dependency) : {};
           this.external = val.external;
+          this.title = val.title || "";
         }
       }
     }

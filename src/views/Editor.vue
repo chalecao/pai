@@ -12,7 +12,7 @@
 
       <page-dialog></page-dialog>
       <load-dialog></load-dialog>
-      <upload-dialog></upload-dialog>
+      <login-dialog></login-dialog>
       <confirm-dialog></confirm-dialog>
       <save-dialog></save-dialog>
       <block-loader></block-loader>
@@ -35,7 +35,7 @@ import Mainegg from "@/components/editor/main";
 import BlockLoader from "@/components/editor/common/loader/BlockLoader";
 import PageDialog from "@/components/editor/dialogs/PageDialog";
 import LoadDialog from "@/components/editor/dialogs/LoadDialog";
-import UploadDialog from "@/components/editor/dialogs/UploadDialog";
+import LoginDialog from "@/components/editor/dialogs/LoginDialog";
 import ConfirmDialog from "@/components/editor/dialogs/ConfirmDialog";
 import SaveDialog from "@/components/editor/dialogs/SaveDialog";
 
@@ -48,7 +48,7 @@ export default {
     BlockLoader,
     PageDialog,
     LoadDialog,
-    UploadDialog,
+    LoginDialog,
     ConfirmDialog,
     SaveDialog
   },

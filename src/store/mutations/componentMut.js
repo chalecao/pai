@@ -1,4 +1,5 @@
 import types from '@/store/types'
+import localforage from "@/polyfills/localforage4vscode";
 
 const internalComponentMutations = {
   /**
@@ -33,16 +34,33 @@ const internalComponentMutations = {
   },
 
   /**
- * 添加自定义组件
- *
- * @param {string} componentJson: compoent JSOn schema
- */
+   * 添加自定义组件
+   *
+   * @param {string} componentJson: compoent JSON schema
+   */
   [types._addCustomComponent]: function (state, componentJson) {
-    if (!state.app.customComponents) {
-      state.app.customComponents = []
+    state.project.customComponents.push(componentJson)
+  },
+
+
+  [types._deleteCustomComponent]: function (state, comp) {
+    console.log(comp)
+    if (comp && comp.id) {
+      state.project.customComponents.splice(state.project.customComponents.findIndex(com => com.id == comp.id), 1)
     }
-    state.app.customComponents.push(componentJson)
-  }
+  },
+
+
+  /**
+   * 加载自定义组件
+   *
+   * @param {string} componentJson: compoent JSON schema
+   */
+  [types._loadCustomComponent]: async function (state, componentJson) {
+    try {
+      state.project.customComponents = componentJson ? JSON.parse(componentJson) : []
+    } catch (e) { console.log(e) }
+  },
 }
 
 const componentMutations = {

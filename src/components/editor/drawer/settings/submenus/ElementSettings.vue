@@ -12,6 +12,27 @@
       ></dim-pos>
 
       <div class="menu">
+        <mdc-textfield
+          class="text-item"
+          v-model="displayN"
+          label="displayName"
+          dense
+          @keyup.native="e => onPropChanges('displayName', e.target.value)"
+        />
+        <mdc-textfield
+          class="text-item"
+          label="class"
+          :value="typeof cls == 'object'?JSON.stringify(cls):(cls||'')"
+          dense
+          @blur="e => e && onPropChanges('classes', typeof cls == 'object'? JSON.parse(e.target.value):e.target.value)"
+        />
+        <mdc-textfield
+          class="text-item"
+          label="dependency"
+          :value="typeof dep == 'object'?JSON.stringify(dep):(dep||'')"
+          dense
+          @blur="e => e && onPropChanges('dependency', typeof dep == 'object'? JSON.parse(e.target.value):e.target.value)"
+        />
         <slider
           label="Opacity"
           icon="system/editor/opacity"
@@ -134,12 +155,19 @@
     <menu-toggle menuHeader="Image" :hidden="(typeof att.src === 'undefined' || att.src === null)">
       <div class="menu">
         <mdc-textfield
-          class="text-item"
+          class="text-item text-item-image"
           v-model="att.src"
           label="Image URL"
           dense
           @keyup.native="e => onAttrsChanges('src', e.target.value)"
         />
+
+        <div class="margin-l-20">
+          <input type="file" class="custom-img-upload" />
+          <a-button @click="upload">
+            <a-icon type="upload" />上传
+          </a-button>
+        </div>
       </div>
     </menu-toggle>
 
@@ -206,12 +234,7 @@
         ></color-picker>
       </div>
     </menu-toggle>
-    <menu-toggle
-      menuHeader="其他属性"
-      @add="()=>addHandler( 'attribute')"
-      :showAdd="true"
-      :hidden="!Object.keys(att).length"
-    >
+    <menu-toggle menuHeader="其他属性" @add="()=>addHandler( 'attribute')" cusKey="add" cusIcon="+">
       <div class="menu">
         <div v-for="(item, key, index) in att" :key="key">
           <mdc-checkbox
@@ -255,12 +278,7 @@
         </div>
       </div>
     </menu-toggle>
-    <menu-toggle
-      menuHeader="其他样式"
-      @add="()=>addHandler( 'style')"
-      :showAdd="true"
-      :hidden="!Object.keys(sty).length"
-    >
+    <menu-toggle menuHeader="其他样式" @add="()=>addHandler( 'style')" cusKey="add" cusIcon="+">
       <div class="menu">
         <div v-for="(item, key, index) in sty" :key="key">
           <mdc-checkbox
@@ -304,14 +322,19 @@
         </div>
       </div>
     </menu-toggle>
+    <a-modal title="请输入要添加的key" v-model="visible" @ok="handleOk">
+      <a-input v-model="tempkey" />
+    </a-modal>
   </div>
 </template>
 
 
 <script>
+import { mapState, mapActions, mapMutations } from "vuex";
 import cloneDeep from "clone-deep";
+import WPAPI from "wpapi/browser/wpapi";
 import WebSafeFonts from "@/assets/WebSafeFonts";
-
+import { OssImgSuffix, noLoginMessage } from "@/store/types";
 import MenuToggle from "@/components/editor/common/MenuToggle";
 import Slider from "./controls/Slider";
 import IconSelect from "./controls/IconSelect";
@@ -334,6 +357,7 @@ export default {
     DimPos
   },
   props: [
+    "displayName",
     "height",
     "width",
     "top",
@@ -343,10 +367,15 @@ export default {
     "zIndex",
     "text",
     "styles",
-    "attrs"
+    "attrs",
+    "classes",
+    "dependency"
   ],
   data: function() {
     return {
+      displayN: this.displayName,
+      cls: this.classes,
+      dep: this.dependency,
       h: this.height,
       w: this.width,
       t: this.top,
@@ -358,10 +387,28 @@ export default {
       sty: cloneDeep(this.styles),
       att: cloneDeep(this.attrs),
       fonts: WebSafeFonts,
-      borderSelected: ""
+      borderSelected: "",
+      tempkey: "",
+      temptype: "",
+      visible: false,
+      headers: {
+        authorization: "authorization-text"
+      }
     };
   },
+  computed: mapState({
+    wp: state => state.wp
+  }),
   watch: {
+    displayName(val) {
+      this.displayN = val.toString();
+    },
+    classes(val) {
+      this.cls = cloneDeep(val);
+    },
+    dependency() {
+      this.dep = cloneDeep(val);
+    },
     height(val) {
       this.h = val.toString();
     },
@@ -402,9 +449,34 @@ export default {
     }
   },
   methods: {
+    onPropChanges(prop, value) {
+      this.emitChanges(prop, value);
+    },
     onStyleChanges(prop, value) {
       this.sty[prop] = value;
       this.emitChanges("styles", this.sty);
+    },
+    upload() {
+      if (this.wp) {
+        this.wp
+          .media()
+          .file(document.querySelector(".custom-img-upload").files[0])
+          .create({
+            title: "custom-img",
+            alt_text: "loading..."
+          })
+          .then(response => {
+            // Your media is now uploaded: let's associate it with a post
+            // console.log(response)  OssImgSuffix
+            this.onAttrsChanges("src", response.source_url);
+          })
+          .catch(e => {
+            console.log(e);
+            this.$message.error(noLoginMessage);
+          });
+      } else {
+        this.$message.error(noLoginMessage);
+      }
     },
 
     onAttrsChanges(prop, value) {
@@ -416,25 +488,47 @@ export default {
       this.$emit("propchange", { type, value });
     },
     deleteItem(type, key) {
-      if (type == "attribute") {
-        delete this.att[key];
+      this.$confirm({
+        title: `确定删除${key}?`,
+        // content: `确定删除${key}?`,
+        onOk: () => {
+          if (type == "attribute") {
+            delete this.att[key];
+            this.emitChanges("attrs", this.att);
+          }
+          if (type == "style") {
+            delete this.sty[key];
+            this.emitChanges("styles", this.sty);
+          }
+        },
+        onCancel() {}
+      });
+    },
+    handleOk() {
+      this.visible = false;
+      if (!this.tempkey) return;
+
+      if (this.temptype == "attribute") {
+        this.att[this.tempkey] = "";
         this.emitChanges("attrs", this.att);
       }
-      if (type == "style") {
-        delete this.sty[key];
+      if (this.temptype == "style") {
+        this.sty[this.tempkey] = "";
         this.emitChanges("styles", this.sty);
       }
     },
     addHandler(type) {
-      let key = prompt(`要添加的${type}的key`);
-
-      if (type == "attribute") {
-        this.att[key] = "";
-        this.emitChanges("attrs", this.att);
+      this.temptype = type;
+      this.visible = true;
+    },
+    handleChange(info) {
+      if (info.file.status !== "uploading") {
+        console.log(info.file, info.fileList);
       }
-      if (type == "style") {
-        this.sty[key] = "";
-        this.emitChanges("styles", this.sty);
+      if (info.file.status === "done") {
+        this.$message.success(`${info.file.name} file uploaded successfully`);
+      } else if (info.file.status === "error") {
+        this.$message.error(`${info.file.name} file upload failed.`);
       }
     }
   }
@@ -454,8 +548,14 @@ export default {
 .menu .text-item {
   margin: 0 20px 10px;
 }
+.text-item-image {
+  display: inline-block;
+}
 .menu-toggle__delete {
   font-size: 32px;
   cursor: pointer;
+}
+.margin-l-20 {
+  margin-left: 20px;
 }
 </style>

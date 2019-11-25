@@ -218,6 +218,7 @@ const elementActions = {
     commit(types._clearSelectedElements)
     freshElements.map(el => commit(types._addSelectedElement, el))
   }
+  
 }
 
 export default elementActions

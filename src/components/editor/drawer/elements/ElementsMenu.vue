@@ -5,11 +5,14 @@
       :menuHeader="ele.name"
       :key="ele.name"
       :startClosed="ele.close"
+      @oper="showOper()"
+      cusKey="oper"
+      cusIcon="发布到组件库"
     >
       <div class="el-menu">
         <div
           class="el-menu__el"
-          :key="element.name"
+          :key="element.displayName + element.name"
           v-for="element in ele.comps"
           :title="element.name"
           draggable="true"
@@ -23,16 +26,35 @@
             color="rgba(0,0,0,.87)"
           ></svgicon>
           <span>{{element.displayName || element.name}}</span>
+          <div class="el-menu__el_close">
+            <a-badge
+              v-if="!!element.delable"
+              count="x"
+              class="el-menu__el_badge"
+              :numberStyle="{backgroundColor: '#fff', color: '#999', boxShadow: '0 0 0 1px #d9d9d9 inset'}"
+              @click.stop.prevent="delComp(element)"
+            />
+          </div>
         </div>
       </div>
     </menu-toggle>
+    <a-modal title="发布组件" v-model="visible" @ok="handlePublish">
+      名称：
+      <a-input v-model="compName"></a-input>价格：
+      <a-input v-model="compFee" placeholder="0 - 10"></a-input>
+    </a-modal>
   </div>
 </template>
 
 
 <script>
 import { mapState, mapActions } from "vuex";
-import { registerElement } from "@/store/types";
+import {
+  registerElement,
+  deleteCustomComponent,
+  pubComp2market,
+  noLoginMessage
+} from "@/store/types";
 
 import basicElements from "@/assets/BasicElements";
 import materialComponents from "@/assets/MaterialComponents";
@@ -48,54 +70,97 @@ export default {
   components: { MenuToggle },
   data: function() {
     return {
-
+      visible: false,
+      compName: "",
+      compFee: 0
     };
   },
   computed: {
     ...mapState({
       activePage: state => state.app.selectedPage,
-      elementConfig: state=>( [
+      oauth: state => state.oauth,
+      elementConfig: state => [
         {
           name: "基本组件",
           comps: basicElements,
           close: false
         },
-        {
-          name: "Fusion组件",
-          comps: fusionComponents,
-          close: true
-        },
-        {
-          name: "ANTD组件",
-          comps: antdComponents,
-          close: true
-        },
-        {
-          name: "MDL组件",
-          comps: materialComponents,
-          close: true
-        },
+        // {
+        //   name: "Fusion组件",
+        //   comps: fusionComponents,
+        //   close: true
+        // },
+        // {
+        //   name: "ANTD组件",
+        //   comps: antdComponents,
+        //   close: true
+        // },
+        // {
+        //   name: "MDL组件",
+        //   comps: materialComponents,
+        //   close: true
+        // },
         {
           name: "自定义组件",
-          comps: ({...mockComponents, ...state.app.customComponents}),
+          comps: state.project.customComponents,
           close: true,
-          icon: "component"
+          icon: "component",
+          delable: true
         }
-      ])
+      ]
     })
   },
+
   methods: {
     dragstartHandler(e, item) {
       e.dataTransfer.dropEffect = "copy";
       e.dataTransfer.effectAllowed = "all";
       e.dataTransfer.setData("text/plain", JSON.stringify(this.initItem(item)));
     },
-
+    showOper() {
+      this.visible = true;
+    },
+    handlePublish() {
+      if (!this.oauth.isAuthorized) {
+        this.$message.error(noLoginMessage);
+        this.visible = false;
+      } else if (!this.compName) {
+        this.$message.error("请填写组件合集名称");
+      } else {
+        this.$message.info(
+          "感谢贡献组件，组件审结通过之后，就会展示在组件库中"
+        );
+        this.visible = false;
+        this.pubComp2market({ name: this.compName, price: this.compFee });
+      }
+    },
     addItemToStage(e, item) {
+      console.log('addItemToStage', item)
+      let heightInContainer = 0;
+      let childrenInContainer = document.querySelector(".mr-container")
+        .children;
+      [].forEach.call(childrenInContainer, el => {
+        let _height = parseInt(getComputedStyle(el).height);
+        if (!isNaN(_height)) {
+          heightInContainer += _height;
+        }
+      });
+      item.top = heightInContainer;
+      item.left = 0;
       this.registerElement({
         pageId: this.activePage.id,
         el: this.initItem(item),
         global: e.shiftKey
+      });
+    },
+    delComp(curComp) {
+      console.log(curComp);
+      this.$confirm({
+        title: `确定删除组件？`,
+        onOk: () => {
+          this.deleteCustomComponent(curComp);
+        },
+        onCancel() {}
       });
     },
 
@@ -110,7 +175,7 @@ export default {
       };
     },
 
-    ...mapActions([registerElement])
+    ...mapActions([registerElement, deleteCustomComponent, pubComp2market])
   }
 };
 </script>
@@ -137,6 +202,7 @@ export default {
 }
 
 .el-menu__el {
+  position: relative;
   width: 79px;
   cursor: pointer;
   padding-top: 1em;
@@ -154,6 +220,18 @@ export default {
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: x-small;
-  padding: 0 4px;
+}
+.el-menu__el_close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0;
+  z-index: 999;
+}
+.el-menu__el_close {
+  padding: 0;
+}
+.el-menu__el_badge {
+  cursor: pointer;
 }
 </style>

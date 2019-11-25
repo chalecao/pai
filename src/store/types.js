@@ -56,6 +56,18 @@ export const deletePage = 'deletePage'
 export const createEgglement = 'createEgglement'
 export const updateEgglement = 'updateEgglement'
 export const deleteEgglement = 'deleteEgglement'
+export const deleteCustomComponent = 'deleteCustomComponent'
+export const addCustomComponent = 'addCustomComponent'
+export const loadCustomComponent = 'loadCustomComponent'
+
+// WP
+export const syncProject2wp = 'syncProject2wp'
+export const _syncProject2wp = '_syncProject2wp'
+export const publishPage = 'publishPage'
+export const _publishPage = '_publishPage'
+export const mergeProjectFromWp = 'mergeProjectFromWp'
+export const pullProject = 'pullProject'
+export const pubComp2market = 'pubComp2market'
 
 // INTERNAL-MUTATIONS
 export const _toggleAuthorizationStatus = '_toggleAuthorizationStatus'
@@ -85,7 +97,15 @@ export const _removeComponentRef = '_removeComponentRef'
 
 // custom components
 export const _addCustomComponent = '_addCustomComponent'
+export const _loadCustomComponent = '_loadCustomComponent'
+export const _deleteCustomComponent = '_deleteCustomComponent'
 
+export const _something = 'file'
+export const _somethingp = 'Czochkf1ta(&%zVw5YQ%g)BR'
+export const OssImgSuffix = '?x-oss-process=image/auto-orient,1/quality,q_90/format,webp'
+export const noLoginMessage = "请先点击右上角登录云π, 开始制作!"
+
+export const paiComponentMarket = 5410
 const types = {
   // GETTERS
   getPageIndexById,
@@ -106,6 +126,7 @@ const types = {
   logOut,
   checkAuth,
 
+
   downloadVueSources,
   downloadProject,
   uploadVueSourcesToGH,
@@ -125,6 +146,13 @@ const types = {
   changeElementParent,
   removeElement,
   rebaseSelectedElements,
+  // wp
+  syncProject2wp,
+  _syncProject2wp,
+  publishPage,
+  _publishPage,
+  mergeProjectFromWp,
+  pullProject,
 
   // MUTATIONS
   addProject,
@@ -138,6 +166,11 @@ const types = {
   createEgglement,
   updateEgglement,
   deleteEgglement,
+
+  addCustomComponent,
+  loadCustomComponent,
+  deleteCustomComponent,
+  pubComp2market,
 
   // INTERNAL-MUTATIONS
   _toggleAuthorizationStatus,
@@ -165,7 +198,12 @@ const types = {
   _updateComponentRef,
   _removeComponentRef,
   // components
-  _addCustomComponent
+  _addCustomComponent,
+  _loadCustomComponent,
+  _deleteCustomComponent,
+
+  // consts
+  paiComponentMarket
 }
 
 export default types

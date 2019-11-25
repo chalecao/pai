@@ -17,7 +17,7 @@
           height="16"
           color="rgba(0,0,0,.87)"
         ></svgicon>
-        <span>{{element.text || element.name|| element.displayName }}</span>
+        <span>{{element.text || element.displayName|| element.name }}</span>
         <span class="ele-menu-tree__end-detail">
           <mdc-menu-anchor>
             <svgicon
@@ -46,7 +46,7 @@
               height="16"
               color="rgba(0,0,0,.87)"
             ></svgicon>
-            <span>{{element.text || element.name|| element.displayName }}</span>
+            <span>{{element.text || element.displayName|| element.name }}</span>
             <div v-if="element.children.length">
               <div
                 :class="getClass(element.id)"
@@ -62,7 +62,7 @@
                   height="16"
                   color="rgba(0,0,0,.87)"
                 ></svgicon>
-                <span>{{element.text || element.name|| element.displayName }}</span>
+                <span>{{element.text || element.displayName|| element.name }}</span>
               </div>
             </div>
           </div>
@@ -89,11 +89,12 @@ import {
   _addSelectedElements,
   moveElement,
   rebaseSelectedElements,
-  _addCustomComponent
+  addCustomComponent
 } from "@/store/types";
 import basicElements from "@/assets/BasicElements";
 
 import MenuToggle from "@/components/editor/common/MenuToggle";
+import cloneDeep from "clone-deep";
 
 import "@/assets/icons/system/elements/";
 
@@ -131,9 +132,9 @@ export default {
       switch (selected.index) {
         case MAKE_COMPONENT:
           // todo
-          const componnetSchema = JSON.stringify(element)
-          console.log(componnetSchema)
-          this._addCustomComponent(componnetSchema)
+          let el = cloneDeep(element);
+          // const componnetSchema = JSON.stringify(element)
+          this.addCustomComponent(el);
           break;
       }
     },
@@ -171,13 +172,17 @@ export default {
       };
     },
 
-    ...mapActions([registerElement, moveElement, rebaseSelectedElements]),
+    ...mapActions([
+      registerElement,
+      moveElement,
+      rebaseSelectedElements,
+      addCustomComponent
+    ]),
     ...mapMutations([
       _changeActivePage,
       _rebaseActivePage,
       _clearSelectedElements,
-      _addSelectedElements,
-      _addCustomComponent
+      _addSelectedElements
     ])
   }
 };

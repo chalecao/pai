@@ -2,63 +2,72 @@
   <div class="user-menu__wrapper">
     <mdc-menu-anchor v-if="loggedUser">
       <button class="avatar-btn" @click="showUserMenu">
-        <img :src="loggedUser.avatar_url" alt="User avatar" height="100%" width="100%" draggable="false"/>
+        <img :src="avatar" alt="User avatar" height="100%" width="100%" draggable="false" />
       </button>
       <mdc-menu ref="userMenu" @select="onSelect">
         <mdc-menu-item disabled>
           <div class="menu-title">
-            <span class="name">{{loggedUser.name || loggedUser.login}}</span>
-            <span class="login">@{{loggedUser.login}}</span>
-            <img class="avatar" :src="loggedUser.avatar_url" alt="User avatar"/>
+            <span class="name">{{loggedUser}}</span>
+            <img class="avatar" :src="avatar" alt="User avatar" />
           </div>
         </mdc-menu-item>
         <mdc-menu-divider></mdc-menu-divider>
-        <mdc-menu-item>Logout</mdc-menu-item>
+        <mdc-menu-item>退出账号</mdc-menu-item>
       </mdc-menu>
     </mdc-menu-anchor>
 
-    <button class="avatar-btn" v-if="!loggedUser" @click="logIn" :disabled="!loginBtnEnabled" v-tooltip="'Login with GitHub'" >
-      <svgicon icon="system/gh_logo" width="100%" height="100%"
-        :color="loginBtnEnabled ? '#2b6a73': 'rgba(0,0,0,.38)'">
-      </svgicon>
+    <button class="avatar-btn" v-if="!loggedUser" @click="showLogin" :disabled="!loginBtnEnabled">
+      <svgicon
+        icon="system/gh_logo"
+        width="100%"
+        height="100%"
+        :color="loginBtnEnabled ? '#2b6a73': 'rgba(0,0,0,.38)'"
+      ></svgicon>
     </button>
   </div>
 </template>
 
 
 <script>
-import { mapState, mapActions } from 'vuex'
-import { logIn, logOut } from '@/store/types'
+import { mapState, mapActions } from "vuex";
+import { logIn, logOut } from "@/store/types";
 
-import '@/assets/icons/system/gh_logo'
+import "@/assets/icons/system/gh_logo";
 
 export default {
-  name: 'user-menu',
-  data: function () {
+  name: "user-menu",
+  data: function() {
     return {
-      loginBtnEnabled: true
-    }
+      loginBtnEnabled: true,
+      avatar:
+        "https://secure.gravatar.com/avatar/bd32126befaa6c71f8331e5589d793d5"
+    };
   },
   computed: mapState({
     isLoggedIn: state => state.oauth.isAuthorized,
     loggedUser: state => state.oauth.authenticatedUser
   }),
   methods: {
-    showUserMenu () {
-      this.$refs.userMenu.show()
+    showUserMenu() {
+      this.$refs.userMenu.show();
+    },
+    showLogin() {
+      this.$root.$emit("open-login-dialog");
     },
 
-    onSelect (selected) {
-      const LOGOUT = 1
+    onSelect(selected) {
+      const LOGOUT = 1;
 
       switch (selected.index) {
-        case LOGOUT: this.logOut(); break
+        case LOGOUT:
+          this.logOut();
+          break;
       }
     },
 
     ...mapActions([logIn, logOut])
   }
-}
+};
 </script>
 
 
@@ -85,8 +94,8 @@ export default {
   display: grid;
   grid-template-rows: 18px;
   grid-template-areas:
-    'name avatar'
-    'login avatar';
+    "name avatar"
+    "login avatar";
 }
 .name {
   grid-area: name;

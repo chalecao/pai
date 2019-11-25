@@ -4,7 +4,7 @@
       <svgicon icon="system/actions/sync" width="24" height="24" color="rgba(0,0,0,.38)"></svgicon>
     </button>
 
-    <button v-tooltip="'Undo'" class="action-btn" :disabled="!canUndo" @click="$root.$emit('undo')">
+    <button v-tooltip="'撤销'" class="action-btn" :disabled="!canUndo" @click="$root.$emit('undo')">
       <svgicon
         icon="system/actions/undo"
         width="24"
@@ -13,7 +13,7 @@
       ></svgicon>
     </button>
 
-    <button v-tooltip="'Redo'" class="action-btn" :disabled="!canRedo" @click="$root.$emit('redo')">
+    <button v-tooltip="'重做'" class="action-btn" :disabled="!canRedo" @click="$root.$emit('redo')">
       <svgicon
         icon="system/actions/redo"
         width="24"
@@ -23,7 +23,7 @@
     </button>
 
     <router-link :to="{name: 'preview'}">
-      <button v-tooltip="'Preview'" class="action-btn">
+      <button v-tooltip="'预览'" class="action-btn">
         <svgicon icon="system/actions/preview" width="24" height="24" color="#2b6a73"></svgicon>
       </button>
     </router-link>
@@ -31,7 +31,7 @@
     <div class="separator"></div>
 
     <button
-      v-tooltip="'Clear page'"
+      v-tooltip="'清空'"
       class="action-btn"
       :disabled="isLoading"
       @click="$root.$emit('open-confirm-dialog')"
@@ -39,31 +39,37 @@
       <svgicon icon="system/actions/delete" width="24" height="24" color="#2b6a73"></svgicon>
     </button>
     <button
-      v-tooltip="'Save page'"
+      v-tooltip="'代码'"
       class="action-btn"
       :disabled="isLoading"
-      @click="$root.$emit('open-save-dialog')"
+      @click="$root.$emit('open-code-dialog')"
     >
-      <svgicon icon="system/actions/save" width="24" height="24" color="#2b6a73"></svgicon>
+      <svgicon icon="system/editor/font" width="24" height="24" color="#2b6a73"></svgicon>
     </button>
 
-    <!-- <mdc-menu-anchor>
-      <button v-tooltip="'Open...'" class="action-btn" :disabled="isLoading" @click="showLoadFromMenu">
+    <mdc-menu-anchor>
+      <button v-tooltip="'打开'" class="action-btn" :disabled="isLoading" @click="showLoadFromMenu">
         <svgicon icon="system/actions/folder" width="24" height="24" color="#2b6a73"></svgicon>
       </button>
       <mdc-menu ref="loadFromMenu" @select="onSelectLoadFrom">
-        <mdc-menu-item disabled>Open project:</mdc-menu-item>
+        <mdc-menu-item disabled>打开项目:</mdc-menu-item>
         <mdc-menu-divider></mdc-menu-divider>
         <mdc-menu-item>
-          <input type="file" ref="inputOpenLocal" @change="openLocalFile" :value="fileValue" accept=".gg"/>
-          Computer
+          <input
+            type="file"
+            ref="inputOpenLocal"
+            @change="openLocalFile"
+            :value="fileValue"
+            accept=".gg"
+          />
+          本地
         </mdc-menu-item>
-        <mdc-menu-item>GitHub</mdc-menu-item>
+        <mdc-menu-item>URL地址</mdc-menu-item>
       </mdc-menu>
-    </mdc-menu-anchor>-->
+    </mdc-menu-anchor>
 
     <!-- <mdc-menu-anchor>
-      <button v-tooltip="'Download...'" class="action-btn" :disabled="isLoading" @click="showDownloadMenu">
+      <button v-tooltip="'下载'" class="action-btn" :disabled="isLoading" @click="showDownloadMenu">
         <svgicon icon="system/actions/download" width="24" height="24" color="#2b6a73"></svgicon>
       </button>
       <mdc-menu ref="downloadMenu" @select="onSelectDownload">
@@ -74,36 +80,44 @@
       </mdc-menu>
     </mdc-menu-anchor>-->
 
-    <!-- <button
-      v-tooltip="saveBtnTitle"
-      class="action-btn"
-      @click="$root.$emit('open-upload-dialog')"
-      :disabled="!isLoggedIn || !hasChanges || (isLoggedIn && isLoading)"
-    >
-      <svgicon
-        icon="system/actions/cloud_off"
-        v-if="!isLoggedIn"
-        width="24"
-        height="24"
-        color="rgba(0,0,0,.38)"
-      ></svgicon>
-      <svgicon
-        icon="system/actions/cloud_up"
-        v-else-if="hasChanges"
-        width="24"
-        height="24"
-        color="#2b6a73"
-      ></svgicon>
-      <svgicon
-        icon="system/actions/cloud_done"
-        v-else
-        width="24"
-        height="24"
-        color="rgba(0,0,0,.38)"
-      ></svgicon>
-    </button>-->
-
-    <!-- <div class="separator"></div> -->
+    <div class="separator"></div>
+    <mdc-menu-anchor>
+      <button
+        v-tooltip="saveBtnTitle"
+        class="action-btn"
+        @contextmenu.exact.stop.prevent="showCloudMenu"
+      >
+        <svgicon
+          icon="system/actions/cloud_off"
+          v-if="!isLoggedIn"
+          width="24"
+          height="24"
+          @click="$root.$emit('open-login-dialog')"
+          color="rgba(0,0,0,.38)"
+        ></svgicon>
+        <svgicon
+          icon="system/actions/cloud_up"
+          v-else-if="hasChanges"
+          @click="syncProject"
+          width="24"
+          height="24"
+          color="#2b6a73"
+        ></svgicon>
+        <svgicon
+          icon="system/actions/cloud_done"
+          v-else
+          width="24"
+          height="24"
+          color="rgba(0,0,0,.38)"
+        ></svgicon>
+      </button>
+      <mdc-menu ref="cloudMenu" @select="onSelectCloud">
+        <mdc-menu-item>登录云π</mdc-menu-item>
+        <mdc-menu-item>上传项目</mdc-menu-item>
+        <mdc-menu-item>拉取项目</mdc-menu-item>
+        <!-- <mdc-menu-item>退出登录</mdc-menu-item> -->
+      </mdc-menu>
+    </mdc-menu-anchor>
   </div>
 </template>
 
@@ -113,7 +127,10 @@ import { mapState, mapActions } from "vuex";
 import {
   downloadProject,
   downloadVueSources,
-  loadVueggProject
+  loadVueggProject,
+  syncProject2wp,
+  logOut,
+  pullProject
 } from "@/store/types";
 
 import "@/assets/icons/system/actions";
@@ -128,10 +145,10 @@ export default {
   computed: {
     saveBtnTitle() {
       return !this.isLoggedIn
-        ? "Login with GitHub to save project"
+        ? "登录云π"
         : this.hasChanges
-        ? "Save in GitHub"
-        : "Nothing to save";
+        ? "点击同步"
+        : "同步完成";
     },
 
     ...mapState({
@@ -143,10 +160,20 @@ export default {
       isLoggedIn: state => state.oauth.isAuthorized
     })
   },
+  mounted() {
+    window.addEventListener("beforeunload", function(e) {
+      (e || window.event).returnValue = "确定离开？";
+      this.syncProject();
+      //注意：这里return方法是不起作用的
+    });
+  },
   methods: {
     // --- DOWNLOAD MENU METHODS
     showDownloadMenu() {
       this.$refs.downloadMenu.show();
+    },
+    showCloudMenu() {
+      this.$refs.cloudMenu.show();
     },
     onSelectDownload(selected) {
       const PROJECT = 1;
@@ -162,16 +189,36 @@ export default {
       }
     },
 
+    onSelectCloud(selected) {
+      console.log(selected.index);
+      switch (selected.index) {
+        case 0:
+          this.$root.$emit("open-login-dialog");
+          break;
+        case 1:
+          this.syncProject();
+          this.$message.info("同步中，请稍后...");
+          break;
+        case 2:
+          this.pullProject();
+          this.$message.info("拉取项目中，请稍后...");
+          break;
+        case 3:
+          this.exitAccount();
+          break;
+      }
+    },
+
     // --- LOAD FROM MENU METHODS
     showLoadFromMenu() {
       this.$refs.loadFromMenu.show();
     },
     onSelectLoadFrom(selected) {
       const PC = 1;
-      const GITHUB = 2;
+      const URL = 2;
 
       switch (selected.index) {
-        case GITHUB:
+        case URL:
           this.$root.$emit("open-load-dialog");
           break;
         case PC:
@@ -189,8 +236,21 @@ export default {
         this.loadVueggProject({ origin: "pc", content: e.target.result });
       reader.readAsText(file);
     },
+    syncProject() {
+      this.syncProject2wp();
+    },
+    exitAccount() {
+      this.logOut();
+    },
 
-    ...mapActions([downloadProject, downloadVueSources, loadVueggProject])
+    ...mapActions([
+      downloadProject,
+      downloadVueSources,
+      loadVueggProject,
+      syncProject2wp,
+      logOut,
+      pullProject
+    ])
   }
 };
 </script>

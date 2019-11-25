@@ -115,20 +115,20 @@ const projectActions = {
    * @param {string|null} [repo] : (github-origin) Repository name from where to fetch project (vue.gg)
    * @param {string|null} [content] : (pc-origin) The content of the selected file
    */
-  [types.loadVueggProject]: async function ({ state, dispatch, commit }, { origin, userName, repoName, content }) {
+  [types.loadVueggProject]: async function ({ state, dispatch, commit }, { origin, userName, repoUrl, content }) {
     commit(types._toggleBlockLoadingStatus, true)
 
     let project
     switch (origin) {
       case 'local': project = await localforage.getItem('local-checkpoint'); break
       case 'pc': project = content; break
-      case 'github':
+      case 'url':
         // const token = await localforage.getItem('gh-token')
-        const owner = userName || state.oauth.authenticatedUser.login
-        const repo = repoName || state.project.title.replace(/[^a-zA-Z0-9-_]+/g, '-')
+        // const owner = userName || state.oauth.authenticatedUser.login
+        // const repo = repoName || state.project.title.replace(/[^a-zA-Z0-9-_]+/g, '-')
 
         // let ghFile = await api.getVueggProject(owner, repo, token)
-        let ghFile = await api.getVueggProject(owner, repo)
+        let ghFile = await api.getVueggProjectFromUrl(repoUrl)
 
         ghFile
           ? project = ghFile.data.data.content
@@ -136,15 +136,19 @@ const projectActions = {
         break
       default: project = await localforage.getItem('local-checkpoint')
     }
-
+    console.log("load project from " + origin, JSON.parse(project))
     if (project) {
       store.replaceState(newState(JSON.parse((project))))
       commit(types.addProject)
-      if (origin === 'github') localforage.setItem('gh-repo-name', repoName)
-
+      // if (origin === 'github') localforage.setItem('gh-repo-name', repoName)
       await dispatch(types.checkAuth)
+
+      let customComponents = project.customComponents
+      commit(types._loadCustomComponent, customComponents)
     }
     commit(types._toggleBlockLoadingStatus, false)
+
+
   },
 
   /**

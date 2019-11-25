@@ -94,7 +94,4 @@ including it as a global style seem to do the job */
   background-color: #616161;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
 }
-.vue-tooltip.tooltip-vuegg .tooltip-arrow {
-  border-color: #616161 !important;
-}
 </style>

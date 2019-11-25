@@ -1,10 +1,14 @@
 import shortid from 'shortid'
 
-function newPage (name, path, height, width) {
+function newPage(name, path, height, width) {
   return {
+    wpid: '',
+    wplink: '',
+    wpstatus: '',
     id: shortid.generate(),
     name: name,
     path: path,
+    title: "页面标题",
     width: width || '100%',
     height: height || '100%',
     styles: {
@@ -14,7 +18,7 @@ function newPage (name, path, height, width) {
       'position': 'relative',
       'margin': 'auto',
       'background-color': '#ffffff',
-      'overflow': 'hidden'
+      'overflow-y': 'auto'
     },
     classes: [],
     children: []
