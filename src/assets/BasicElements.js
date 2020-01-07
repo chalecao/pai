@@ -16,7 +16,7 @@ const basicElements = [
       'hidden': false,
       'display': 'flex'
     },
-    'classes': {},
+    'classes': '',
     'styles': {
       'overflow': 'hidden',
       'border-color': 'rgba(0, 0, 0, 0.15)',
@@ -46,13 +46,13 @@ const basicElements = [
       'border': '1px solid #dddddd',
       'text-align': 'left'
     },
-    'classes': {},
+    'classes': '',
     'children': [
       {
         'type': 'tr',
         'attrs': {},
         'styles': {},
-        'classes': {},
+        'classes': '',
         'children': [
           {
             'type': 'th',
@@ -61,7 +61,7 @@ const basicElements = [
             'styles': {
               'padding': '0 8px'
             },
-            'classes': {},
+            'classes': '',
             'children': {
 
             }
@@ -72,7 +72,7 @@ const basicElements = [
             'styles': {
               'padding': '0 8px'
             },
-            'classes': {},
+            'classes': '',
             'children': {
 
             }
@@ -83,7 +83,7 @@ const basicElements = [
             'styles': {
               'padding': '0 8px'
             },
-            'classes': {},
+            'classes': '',
             'children': {
 
             }
@@ -95,7 +95,7 @@ const basicElements = [
         'styles': {
           'background-color': 'rgba(0, 0, 0, 0.12)'
         },
-        'classes': {},
+        'classes': '',
         'children': [
           {
             'type': 'td',
@@ -104,7 +104,7 @@ const basicElements = [
             'styles': {
               'padding': '0 8px'
             },
-            'classes': {},
+            'classes': '',
             'children': {
 
             }
@@ -115,7 +115,7 @@ const basicElements = [
             'styles': {
               'padding': '0 8px'
             },
-            'classes': {},
+            'classes': '',
             'children': {
 
             }
@@ -126,7 +126,7 @@ const basicElements = [
             'styles': {
               'padding': '0 8px'
             },
-            'classes': {},
+            'classes': '',
             'children': {
 
             }
@@ -136,7 +136,7 @@ const basicElements = [
         'type': 'tr',
         'attrs': {},
         'styles': {},
-        'classes': {},
+        'classes': '',
         'children': [
           {
             'type': 'td',
@@ -145,7 +145,7 @@ const basicElements = [
             'styles': {
               'padding': '0 8px'
             },
-            'classes': {},
+            'classes': '',
             'children': {
 
             }
@@ -156,7 +156,7 @@ const basicElements = [
             'styles': {
               'padding': '0 8px'
             },
-            'classes': {},
+            'classes': '',
             'children': {
 
             }
@@ -167,7 +167,7 @@ const basicElements = [
             'styles': {
               'padding': '0 8px'
             },
-            'classes': {},
+            'classes': '',
             'children': {
 
             }
@@ -179,7 +179,7 @@ const basicElements = [
         'styles': {
           'background-color': 'rgba(0, 0, 0, 0.12)'
         },
-        'classes': {},
+        'classes': '',
         'children': [
           {
             'type': 'td',
@@ -188,7 +188,7 @@ const basicElements = [
             'styles': {
               'padding': '0 8px'
             },
-            'classes': {},
+            'classes': '',
             'children': {
 
             }
@@ -199,7 +199,7 @@ const basicElements = [
             'styles': {
               'padding': '0 8px'
             },
-            'classes': {},
+            'classes': '',
             'children': {
 
             }
@@ -210,7 +210,7 @@ const basicElements = [
             'styles': {
               'padding': '0 8px'
             },
-            'classes': {},
+            'classes': '',
             'children': {
 
             }
@@ -235,7 +235,7 @@ const basicElements = [
       'text-overflow': 'ellipsis'
     },
     'styles': {},
-    'classes': {}
+    'classes': '',
   },
 
   // INPUT
@@ -252,7 +252,7 @@ const basicElements = [
       'text-overflow': 'ellipsis'
     },
     'styles': {},
-    'classes': {}
+    'classes': '',
   },
 
   // BUTTON
@@ -268,7 +268,7 @@ const basicElements = [
       'overflow': 'hidden',
       'text-overflow': 'ellipsis'
     },
-    'classes': {}
+    'classes': '',
   },
 
   // CHECKBOX
@@ -282,7 +282,7 @@ const basicElements = [
       'type': 'checkbox'
     },
     'styles': {},
-    'classes': {}
+    'classes': '',
   },
 
   // RADIO
@@ -297,7 +297,7 @@ const basicElements = [
       'name': 'default-group'
     },
     'styles': {},
-    'classes': {}
+    'classes': '',
   },
 
   // SELECT
@@ -310,26 +310,26 @@ const basicElements = [
     'height': 40,
     'attrs': {},
     'styles': {},
-    'classes': {},
+    'classes': '',
     'children': [
       {
         'type': 'option',
         'text': 'Option 1',
         'attrs': {},
         'styles': {},
-        'classes': {}
+        'classes': '',
       }, {
         'type': 'option',
         'text': 'Option 2',
         'attrs': {},
         'styles': {},
-        'classes': {}
+        'classes': '',
       }, {
         'type': 'option',
         'text': 'Option 3',
         'attrs': {},
         'styles': {},
-        'classes': {}
+        'classes': '',
       }
     ]
   },
@@ -350,17 +350,15 @@ const basicElements = [
       'font-size': 32,
       'text-align': 'center'
     },
-    'classes': {
-      'material-icons': true
-    }
+    'classes': 'material-icons'
   },
 
   // LINK
   {
     'name': 'link',
     'type': 'a',
-    'text': 'Link',
     'egglement': true,
+    'containegg': true,
     'width': 200,
     'height': 40,
     'attrs': {
@@ -371,7 +369,8 @@ const basicElements = [
       'overflow': 'hidden',
       'text-overflow': 'ellipsis'
     },
-    'classes': {}
+    'children': [],
+    'classes': '',
   },
 
   // TEXT
@@ -389,7 +388,7 @@ const basicElements = [
       'position': 'relative',
       'line-height': 'auto'
     },
-    'classes': {}
+    'classes': '',
   },
 
   // IMAGE
@@ -405,7 +404,7 @@ const basicElements = [
     'styles': {
       'object-fit': 'cover'
     },
-    'classes': {}
+    'classes': '',
   }
 ]
 

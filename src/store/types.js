@@ -99,6 +99,9 @@ export const _removeComponentRef = '_removeComponentRef'
 export const _addCustomComponent = '_addCustomComponent'
 export const _loadCustomComponent = '_loadCustomComponent'
 export const _deleteCustomComponent = '_deleteCustomComponent'
+// market components
+export const _addMarketComponent = '_addMarketComponent'
+export const _delMarketComponent = '_delMarketComponent'
 
 export const _something = 'file'
 export const _somethingp = 'Czochkf1ta(&%zVw5YQ%g)BR'
@@ -201,6 +204,8 @@ const types = {
   _addCustomComponent,
   _loadCustomComponent,
   _deleteCustomComponent,
+  _addMarketComponent,
+  _delMarketComponent,
 
   // consts
   paiComponentMarket

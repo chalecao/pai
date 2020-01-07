@@ -234,7 +234,15 @@
         ></color-picker>
       </div>
     </menu-toggle>
-    <menu-toggle menuHeader="其他属性" @add="()=>addHandler( 'attribute')" cusKey="add" cusIcon="+">
+    <menu-toggle menuHeader="其他属性" :showOper="true">
+      <template v-slot:tipsContent>
+        <a-badge
+          count="+"
+          class="el-menu__el_badge"
+          :numberStyle="{backgroundColor: '#fff', color: 'red', boxShadow: '0 0 0 1px #d9d9d9 inset',cursor:'pointer'}"
+          @click="addHandler( 'attribute')"
+        />
+      </template>
       <div class="menu">
         <div v-for="(item, key, index) in att" :key="key">
           <mdc-checkbox
@@ -278,7 +286,15 @@
         </div>
       </div>
     </menu-toggle>
-    <menu-toggle menuHeader="其他样式" @add="()=>addHandler( 'style')" cusKey="add" cusIcon="+">
+    <menu-toggle menuHeader="其他样式" :showOper="true">
+      <template v-slot:tipsContent>
+        <a-badge
+          count="+"
+          class="el-menu__el_badge"
+          :numberStyle="{backgroundColor: '#fff', color: 'red', boxShadow: '0 0 0 1px #d9d9d9 inset',cursor:'pointer'}"
+          @click="addHandler( 'style')"
+        />
+      </template>
       <div class="menu">
         <div v-for="(item, key, index) in sty" :key="key">
           <mdc-checkbox
@@ -404,9 +420,10 @@ export default {
       this.displayN = val.toString();
     },
     classes(val) {
-      this.cls = cloneDeep(val);
+      // this.cls = cloneDeep(val);
+      this.cls = val.toString();
     },
-    dependency() {
+    dependency(val) {
       this.dep = cloneDeep(val);
     },
     height(val) {

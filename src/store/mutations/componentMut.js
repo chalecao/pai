@@ -42,6 +42,20 @@ const internalComponentMutations = {
     state.project.customComponents.push(componentJson)
   },
 
+  [types._addMarketComponent]: function (state, componentJson) {
+    state.project.marketComponents.push(componentJson)
+  },
+
+  [types._delMarketComponent]: function (state, index) {
+    let marketComponents = []
+    state.project.marketComponents.forEach((it, idx) => {
+      if (idx != index) {
+        marketComponents.push(it)
+      }
+    })
+    console.log(marketComponents, index)
+    state.project.marketComponents = marketComponents
+  },
 
   [types._deleteCustomComponent]: function (state, comp) {
     console.log(comp)
@@ -57,9 +71,7 @@ const internalComponentMutations = {
    * @param {string} componentJson: compoent JSON schema
    */
   [types._loadCustomComponent]: async function (state, componentJson) {
-    try {
-      state.project.customComponents = componentJson ? JSON.parse(componentJson) : []
-    } catch (e) { console.log(e) }
+    state.project.customComponents = componentJson
   },
 }
 

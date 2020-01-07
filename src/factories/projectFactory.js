@@ -7,7 +7,7 @@ function newProject(title) {
     title: title,
     components: [],
     customComponents: [],//自定义组件合集
-    marketComponents: [],//只记录id即可
+    marketComponents: [],//引用市场的组件合集的合集
     pages: [newPage('Home', '/')]
   }
 }

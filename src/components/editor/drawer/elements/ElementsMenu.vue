@@ -1,13 +1,28 @@
 <template>
   <div class="menus-wrapper">
     <menu-toggle
-      v-for="ele in elementConfig"
+      v-for="(ele, index)  in elementConfig"
       :menuHeader="ele.name"
       :key="ele.name"
-      :startClosed="ele.close"
-      @oper="showOper()"
-      cusKey="oper"
+      :initClosed="ele.close"
+      :showOper="ele.del || ele.publish"
     >
+      <template v-slot:tipsContent>
+        <a-badge
+          v-if="ele.publish"
+          class="el-menu__el_badge"
+          count="发布到组件库"
+          :numberStyle="{cursor:'pointer'}"
+          @click="showOper"
+        />
+        <a-badge
+          v-if="ele.del"
+          count="删除"
+          class="el-menu__el_badge"
+          :numberStyle="{backgroundColor: '#fff', color: 'red', boxShadow: '0 0 0 1px #d9d9d9 inset',cursor:'pointer'}"
+          @click="delCompSet(index-1)"
+        />
+      </template>
       <div class="el-menu">
         <div
           class="el-menu__el"
@@ -27,7 +42,7 @@
           <span>{{element.displayName || element.name}}</span>
           <div class="el-menu__el_close">
             <a-badge
-              v-if="!!element.delable"
+              v-if="!!ele.componentDel"
               count="x"
               class="el-menu__el_badge"
               :numberStyle="{backgroundColor: '#fff', color: '#999', boxShadow: '0 0 0 1px #d9d9d9 inset'}"
@@ -47,12 +62,13 @@
 
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapMutations } from "vuex";
 import {
   registerElement,
   deleteCustomComponent,
   pubComp2market,
-  noLoginMessage
+  noLoginMessage,
+  _delMarketComponent
 } from "@/store/types";
 
 import basicElements from "@/assets/BasicElements";
@@ -100,24 +116,31 @@ export default {
         //   comps: materialComponents,
         //   close: true
         // },
+        ...state.project.marketComponents,
         {
           name: "自定义组件",
           comps: state.project.customComponents,
           close: true,
           icon: "component",
-          delable: true
+          del: false,
+          publish: true,
+          componentDel: true
         }
       ]
     })
   },
 
   methods: {
+    delCompSet(index) {
+      this._delMarketComponent(index);
+    },
     dragstartHandler(e, item) {
       e.dataTransfer.dropEffect = "copy";
       e.dataTransfer.effectAllowed = "all";
       e.dataTransfer.setData("text/plain", JSON.stringify(this.initItem(item)));
     },
     showOper() {
+      console.log(this.oauth.wphost, this.wpmain);
       if (this.oauth.wphost == this.wpmain) {
         this.visible = true;
       } else {
@@ -179,7 +202,8 @@ export default {
       };
     },
 
-    ...mapActions([registerElement, deleteCustomComponent, pubComp2market])
+    ...mapActions([registerElement, deleteCustomComponent, pubComp2market]),
+    ...mapMutations([_delMarketComponent])
   }
 };
 </script>

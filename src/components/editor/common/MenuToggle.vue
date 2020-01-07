@@ -2,20 +2,9 @@
   <div class="menu-toggle" v-show="!hidden">
     <div class="menu-toggle__header" @click="toggleMenu()">
       <span>{{menuHeader}}</span>
-      <a-popover title="操作" v-if="!!cusKey">
+      <a-popover title="操作" v-if="showOper">
         <template slot="content">
-          <a-badge
-            class="el-menu__el_badge"
-            :count="cusIcon"
-            :numberStyle="{cursor:'pointer'}"
-            @click.stop.prevent="emitKey(cusKey)"
-          />
-          <a-badge
-            count="删除"
-            class="el-menu__el_badge"
-            :numberStyle="{backgroundColor: '#fff', color: '#999', boxShadow: '0 0 0 1px #d9d9d9 inset',cursor:'pointer'}"
-            @click.stop.prevent="emitKey('del')"
-          />
+          <slot name="tipsContent"></slot>
         </template>
 
         <a-badge
@@ -52,9 +41,8 @@ export default {
   name: "menu-toggle",
   props: {
     menuHeader: { type: String, default: "" },
-    cusIcon: { type: String, default: "" },
-    cusKey: { type: String, default: "" },
-    startClosed: { type: Boolean, dafault: false },
+    initClosed: { type: Boolean, dafault: false },
+    showOper: { type: Boolean, dafault: false },
     hidden: { type: Boolean, dafault: false }
   },
   data: function() {
@@ -67,7 +55,7 @@ export default {
   mounted: function() {
     this.$nextTick(function() {
       // this.maxHeight = window.getComputedStyle(this.$refs.content)["height"];
-      this.isClosed = this.startClosed;
+      this.isClosed = this.initClosed;
     });
   },
   // computed: {

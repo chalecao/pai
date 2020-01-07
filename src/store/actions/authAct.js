@@ -70,7 +70,7 @@ const authActions = {
    * @param {*} param0 
    * @param {*} param1 
    */
-  [types.pullProject]: async function ({ state, commit }) {
+  [types.pullProject]: async function ({ state, commit, dispatch }) {
     let userId = state.oauth.userId
     let username = state.oauth.authenticatedUser
 

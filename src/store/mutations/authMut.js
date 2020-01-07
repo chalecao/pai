@@ -12,7 +12,7 @@ const internalAuthMutations = {
       state.wp = data.wp
       state.oauth.isAuthorized = true
       state.oauth.userId = data.id
-      state.oauth.wphost = data.wphost
+      state.oauth.wphost = data.host
       state.oauth.authenticatedUser = data.username
     } else {
       state.oauth.isAuthorized = false

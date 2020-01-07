@@ -104,7 +104,6 @@ export default {
       displayName: null,
       text: null,
       height: null,
-      lineHeight: null,
       width: null,
       top: null,
       left: null,
@@ -114,7 +113,7 @@ export default {
       external: "",
       attrs: {},
       styles: {},
-      classes: {},
+      classes: "",
       dependency: {},
       webSafeFonts: WebSafeFonts
     };
@@ -211,8 +210,11 @@ export default {
       if (val !== null) {
         if (Array.isArray(val)) {
           this.displayName = this.text = this.height = this.width = this.top = this.left = this.bottom = this.right = null;
-          this.attrs = this.styles = this.classes = this.dependency = {};
+          this.attrs = this.styles = this.dependency = {};
+          this.classes = "";
           this.zIndex = "auto";
+          this.styles["line-height"] = "normal";
+          this.styles["position"] = "absolute";
         } else {
           this.displayName = val.displayName ? val.displayName : "";
           this.text = val.text ? val.text : null;
@@ -246,7 +248,7 @@ export default {
               : "auto";
           this.attrs = val.attrs ? cloneDeep(val.attrs) : {};
           this.styles = val.styles ? cloneDeep(val.styles) : {};
-          this.classes = val.classes ? cloneDeep(val.classes) : {};
+          this.classes = val.classes || "";
           this.dependency = val.dependency ? cloneDeep(val.dependency) : {};
           this.external = val.external;
           this.title = val.title || "";

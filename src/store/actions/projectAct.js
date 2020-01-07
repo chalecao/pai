@@ -138,12 +138,13 @@ const projectActions = {
     }
     console.log("load project from " + origin, JSON.parse(project))
     if (project) {
-      store.replaceState(newState(JSON.parse((project))))
+      let projectObj = JSON.parse(project)
+      store.replaceState(newState(projectObj))
       commit(types.addProject)
       // if (origin === 'github') localforage.setItem('gh-repo-name', repoName)
       await dispatch(types.checkAuth)
 
-      let customComponents = project.customComponents
+      let customComponents = projectObj.customComponents
       commit(types._loadCustomComponent, customComponents)
     }
     commit(types._toggleBlockLoadingStatus, false)

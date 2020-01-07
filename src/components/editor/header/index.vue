@@ -13,25 +13,30 @@
     <action-bar></action-bar>
     <user-menu></user-menu>
     <a-modal :title="title" v-model="visible" :footer="null">
+      审核组件：
+      <a-list
+        class="demo-loadmore-list"
+        itemLayout="horizontal"
+        :loading="loading"
+        :dataSource="auditdata"
+        v-if="oauth.wphost == wpmain"
+      >
+        <a-list-item slot="renderItem" v-if="showAudit(item.author)" slot-scope="item, index">
+          <a slot="actions" @click="auditOk(item,index)">审核通过</a>
+          <a slot="actions" @click="auditDel(item,index)">删除</a>
+          <div>{{item.name}}</div>
+        </a-list-item>
+      </a-list>可用组件：
       <a-list
         class="demo-loadmore-list"
         :loading="loading"
         itemLayout="horizontal"
         :dataSource="data"
       >
-        <div
-          v-if="showLoadingMore"
-          slot="loadMore"
-          :style="{ textAlign: 'center', marginTop: '12px', height: '32px', lineHeight: '32px' }"
-        >
-          <a-spin v-if="loadingMore" />
-          <a-button v-else @click="onLoadMore">loading more</a-button>
-        </div>
         <a-list-item slot="renderItem" slot-scope="item, index">
-          <a slot="actions">使用</a>
-          <a slot="actions">审核通过</a>
-          <a slot="actions">删除</a>
-          <div>{{item.title}}</div>
+          <a slot="actions" @click="useComponents(item)">使用</a>
+          <a slot="actions" v-if="showAudit(item.author)" @click="auditDel2(item,index)">删除</a>
+          <div>{{item.name}}</div>
         </a-list-item>
       </a-list>
     </a-modal>
@@ -41,7 +46,12 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
-import { updateProject, paiComponentMarket } from "@/store/types";
+import {
+  updateProject,
+  paiComponentMarket,
+  _addMarketComponent
+} from "@/store/types";
+import WPAPI from "wpapi/browser/wpapi";
 
 import UserMenu from "./UserMenu";
 import ActionBar from "./ActionBar";
@@ -61,32 +71,95 @@ export default {
       loading: true,
       loadingMore: false,
       showLoadingMore: true,
+      auditdata: [],
       data: []
     };
   },
   computed: mapState({
     project: state => (state ? state.project : {}),
     projectTitle: state => (state ? state.project.title : ""),
-    wp: state => state.wp
+    wp: state => state.wp,
+    oauth: state => state.oauth,
+    wpmain: state => state.app.wpmain
   }),
   methods: {
+    useComponents(item) {
+      this._addMarketComponent(item);
+    },
+    auditOk(item, index) {
+      this.wp
+        .pages()
+        .id(item.id)
+        .update({
+          status: "publish"
+        })
+        .then(res => {
+          this.auditdata.slice(index, 1);
+          this.$message.error("组件集合审核通过成功");
+        });
+    },
+    auditDel(item, index) {
+      this.wp
+        .pages()
+        .id(item.id)
+        .delete()
+        .then(res => {
+          this.auditdata.slice(index, 1);
+          this.$message.error("组件集合删除成功");
+        });
+    },
+    auditDel2(item, index) {
+      this.wp
+        .pages()
+        .id(item.id)
+        .delete()
+        .then(res => {
+          this.data.slice(index, 1);
+          this.$message.error("组件集合删除成功");
+        });
+    },
+    showAudit(id) {
+      return (
+        this.oauth.wphost == this.wpmain &&
+        (this.oauth.userId == 1 || this.oauth.userId == id)
+      );
+    },
     showModal(title) {
       this.title = title;
       this.visible = true;
+      if (this.oauth.wphost == this.wpmain) {
+        this.getData(res => {
+          this.auditdata = res.results;
+        }, "draft");
+      }
       this.getData(res => {
         this.loading = false;
         this.data = res.results;
-      });
+      }, "publish");
     },
-    getData(callback) {
+    getData(callback, status) {
+      let wp = this.wp;
+      if (this.oauth.wphost != this.wpmain) {
+        wp = new WPAPI({
+          endpoint: this.wpmain + "/wp-json"
+        });
+      }
       wp.pages()
         .param("parent", paiComponentMarket)
-        .param("status", "publish")
+        .param("status", status)
         .then(pages => {
           let results = [];
           try {
             pages.forEach(p => {
-              results.push(JSON.parse(handleComa(p)));
+              results.push({
+                id: p.id,
+                author: p.author,
+                name: p.title.rendered,
+                close: true,
+                icon: "component",
+                del: true,
+                comps: JSON.parse(handleComa(p.content.rendered))
+              });
             });
           } catch (e) {
             console.log(e);
@@ -111,7 +184,7 @@ export default {
         this.tmpProjectTitle = this.projectTitle;
       }
     },
-    ...mapMutations([updateProject])
+    ...mapMutations([updateProject, _addMarketComponent])
   },
   created: function() {
     this.tmpProjectTitle = this.projectTitle;

@@ -161,9 +161,8 @@ export default {
     })
   },
   mounted() {
-    window.addEventListener("beforeunload", function(e) {
+    window.addEventListener("beforeunload", e => {
       (e || window.event).returnValue = "确定离开？";
-      this.syncProject();
       //注意：这里return方法是不起作用的
     });
   },

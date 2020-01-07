@@ -38,6 +38,7 @@ const commonElementMutations = {
     if (payload.classes) payload.egglement.classes = payload.classes
     if (payload.styles) payload.egglement.styles = payload.styles
     if (payload.attrs) payload.egglement.attrs = payload.attrs
+    if (payload.dependency) payload.egglement.dependency = payload.dependency
   },
 
   /**

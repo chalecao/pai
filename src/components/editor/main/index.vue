@@ -83,12 +83,13 @@ export default {
           if (comp.dependency) {
             comp.dependency.css && css.add(comp.dependency.css);
             comp.dependency.js && js.add(comp.dependency.js);
-            comp.dependency.script && script.push(comp.dependency.script);
+            comp.dependency.script && script.add(comp.dependency.script);
           }
         });
         console.log(css);
         console.log(js);
         console.log(script);
+        css.forEach(item => this.addCss(item));
       }
       this.selectFallbackPage(val);
     }
@@ -100,6 +101,18 @@ export default {
       } else {
         this._rebaseActivePage(this.getPageIndexById(page.id));
       }
+    },
+    addCss(href) {
+      console.log(href);
+      if (Object.values(document.styleSheets).find(item => item.href == href)) {
+        return;
+      }
+      var head = document.getElementsByTagName("HEAD").item(0);
+      var style = document.createElement("link");
+      style.href = href;
+      style.rel = "stylesheet";
+      style.type = "text/css";
+      head.appendChild(style);
     },
 
     zoomHandler(zoomValue) {
